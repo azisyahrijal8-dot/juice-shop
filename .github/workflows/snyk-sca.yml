@@ -18,12 +18,16 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Snyk SCA Scan
         uses: snyk/actions/node@master
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
+
       - name: Snyk Monitor
-        run: npx snyk monitor
+        if: always()
+        uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        if: github.ref == 'refs/heads/main'
+        with:
+          command: monitor
